@@ -51,9 +51,15 @@ int LoadMeshFile(std::string meshfile, std::vector<node_struct> &node_data
 	      set_tet_data = 1;
 	    }
 
-	  if ( set_tet_data == 1 && skip_line == 0 )
+	  if ( set_tet_data == 1 && skip_line == 0 ) 
 	    {
-	      tmp_tet_data = TetLineToTetData(line_read);
+	      if ( std::string::npos != line_read.find("**"))
+		{ 
+		  return 0; // all done reading mesh
+		}
+
+	      tmp_tet_data = TetLineToTetData(line_read); // get the tet data
+	      tet_data.push_back(tmp_tet_data); // push tet data back to storage
 	    }  
 
 	  skip_line = 0;
