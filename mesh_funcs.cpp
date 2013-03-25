@@ -63,7 +63,7 @@ int LoadMeshFile(std::string meshfile, std::vector<node_struct> &node_data
 		  return 0; // all done reading mesh
 		}
 
-	      tmp_tet_data = TetLineToTetData(line_read); // get the tet data
+	      tmp_tet_data = TetLineToTetData(line_read,num_vols); // get the tet data
 	      tet_data.push_back(tmp_tet_data); // push tet data back to storage
 	    }  
 
@@ -113,7 +113,7 @@ node_struct NodeLineToNodeData(std::string line_read)
 /*
  * function to take string and convert to tet definition
  */
-tet_struct TetLineToTetData(std::string line_read)
+tet_struct TetLineToTetData(std::string line_read, int num_vol)
 {
   tet_struct mesh_tet_structure; // struct of tet definition
   std::string tmp_copy;
@@ -141,6 +141,8 @@ tet_struct TetLineToTetData(std::string line_read)
   pos = line_read.find(",");
   mesh_tet_structure.link4 = atoi(line_read.substr(0,pos).c_str()); //assign link4
 
+  mesh_tet_structure.mat = num_vol;
+
   return mesh_tet_structure;
 }
 
@@ -150,6 +152,7 @@ tet_struct TetLineToTetData(std::string line_read)
 void PrintMeshVtk(std::string meshfile, std::vector<node_struct> &node_data,std::vector<tet_struct> &tet_data)
 {
   int num_node = 0;
+  int num_tet = 0;
 
   std::string meshname;
   std::ofstream outputmesh; // Output file pointer     
@@ -163,14 +166,57 @@ void PrintMeshVtk(std::string meshfile, std::vector<node_struct> &node_data,std:
   outputmesh << "DATASET UNSTRUCTURED_GRID" << std::endl;
 
   std::vector<node_struct>::const_iterator node_it;
-  for ( node_it = node_data.begin() ; node_it != node_data.end() ; ++node_it)
+  for ( node_it = node_data.begin() ; node_it != node_data.end() ; ++node_it )
     {
       num_node++;
     }
 
   outputmesh << "POINTS " << num_node << " FLOAT" << std::endl;
+  for ( node_it = node_data.begin() ; node_it < node_data.end() ; ++node_it )
+    {
+      outputmesh << (node_it->x_coord) << " " 
+		 << (node_it->y_coord) << " " << (node_it->z_coord) << std::endl;
+    }
+  outputmesh << std::endl;
+
+  std::vector<tet_struct>::const_iterator tet_it;
+  for ( tet_it = tet_data.begin() ; tet_it != tet_data.end() ; ++tet_it)
+    {
+      num_tet++;
+    }
+
+  outputmesh << "CELLS " << num_tet << " " << num_tet*5 << std::endl;
+
+  int start = tet_data[0].link1;
+  for ( tet_it = tet_data.begin() ; tet_it != tet_data.end() ; ++tet_it )
+    {
+      if ( (tet_it->link1) < start )
+	{
+	  start = (tet_it->link1);
+	}
+    }
   
-  
+  for ( tet_it = tet_data.begin() ; tet_it != tet_data.end() ; ++tet_it )
+    {
+      outputmesh << "4 " << (tet_it->link1)-start<< " " << (tet_it->link2)-start
+	 	 <<  " " << (tet_it->link3)-start << " " << (tet_it->link4)-start 
+		 << std::endl;
+    }
+
+  outputmesh << "CELL_TYPES " << num_tet << std::endl;
+  for ( tet_it = tet_data.begin() ; tet_it != tet_data.end() ; ++tet_it )
+    {
+      outputmesh << "10" << std::endl;
+    } 
+
+  outputmesh << "CELL_DATA " << num_tet << std::endl;
+  outputmesh << "SCALARS mat_data int 1" << std::endl;
+  outputmesh << "LOOKUP_TABLE default" << std::endl;
+
+  for ( tet_it = tet_data.begin() ; tet_it != tet_data.end() ; ++tet_it )
+    {
+      outputmesh << (tet_it->mat) << std::endl;
+    }
 
   return;
 }
