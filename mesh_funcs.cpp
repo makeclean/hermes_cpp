@@ -19,6 +19,7 @@ int LoadMeshFile(std::string meshfile, std::vector<node_struct> &node_data
   std::string line_read; // the line being read from file
 
   node_struct tmp_node_data; // temporary copy of the current lines node data
+  tet_struct tmp_tet_data; // temporary copy of the current lines node data
 
   std::cout << "Reading abaqus mesh " << meshfile << std::endl;
   
@@ -52,8 +53,7 @@ int LoadMeshFile(std::string meshfile, std::vector<node_struct> &node_data
 
 	  if ( set_tet_data == 1 && skip_line == 0 )
 	    {
-	      tmp_tet_data = TetLinetoTetData(line_read);
-	      std::cout << line_read << std::endl;
+	      tmp_tet_data = TetLineToTetData(line_read);
 	    }  
 
 	  skip_line = 0;
@@ -99,9 +99,36 @@ node_struct NodeLineToNodeData(std::string line_read)
   return mesh_node_structure;
 }
 
+/*
+ * function to take string and convert to tet definition
+ */
 tet_struct TetLineToTetData(std::string line_read)
 {
+  tet_struct mesh_tet_structure; // struct of tet definition
+  std::string tmp_copy;
   
+  unsigned pos = line_read.find(","); // find comma in the string
+  mesh_tet_structure.tet_num = atoi(line_read.substr(0,pos).c_str()); //assign node id
+  
+  tmp_copy = line_read.substr(pos+1,line_read.length()); // copy from after comma to end of the string
+  line_read = tmp_copy; // copy to original
+  pos = line_read.find(",");
+  mesh_tet_structure.link1 = atoi(line_read.substr(0,pos).c_str()); //assign link1
+
+  tmp_copy = line_read.substr(pos+1,line_read.length()); // copy from after comma to end of the string
+  line_read = tmp_copy; // copy to original
+  pos = line_read.find(",");
+  mesh_tet_structure.link2 = atoi(line_read.substr(0,pos).c_str()); //assign link2
+
+  tmp_copy = line_read.substr(pos+1,line_read.length()); // copy from after comma to end of the string
+  line_read = tmp_copy; // copy to original
+  pos = line_read.find(",");
+  mesh_tet_structure.link3 = atoi(line_read.substr(0,pos).c_str()); //assign link3
+
+  tmp_copy = line_read.substr(pos+1,line_read.length()); // copy from after comma to end of the string
+  line_read = tmp_copy; // copy to original
+  pos = line_read.find(",");
+  mesh_tet_structure.link4 = atoi(line_read.substr(0,pos).c_str()); //assign link4
 
   return mesh_tet_structure;
 }
