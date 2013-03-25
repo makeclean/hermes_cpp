@@ -139,3 +139,11 @@ tet_struct TetLineToTetData(std::string line_read)
   return mesh_tet_structure;
 }
 
+/*
+ * function to dump mesh data to vtk 
+ */
+void PrintMeshVtk(std::vector<node_struct> &node_data,std::vector<tet_struct> &tet_data)
+{
+  
+  return;
+}
