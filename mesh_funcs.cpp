@@ -28,6 +28,7 @@ int LoadMeshFile(std::string meshfile, std::vector<node_struct> &node_data
     }
   else
     {
+      std::cout << "Failed to open mesh file, " << meshfile << std::endl;
       return 1;
     }
 
