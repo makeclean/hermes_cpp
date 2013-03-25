@@ -22,8 +22,12 @@ int LoadMeshFile(std::string meshfile, std::vector<node_struct> &node_data
   
   mesh_file.open(meshfile.c_str(), ios::in); // open the mesh file
   
-  if( mesh_file.is_open() )
+  if( mesh_file.is_open() ) // while we can read data
     {
+      while( getline(mesh_file,line_read) ) //take the current line and decide what do 
+	{
+	  
+	}
       // do stuff
     }
   else
