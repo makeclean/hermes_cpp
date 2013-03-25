@@ -38,6 +38,11 @@ int LoadMeshFile(std::string meshfile, std::vector<node_struct> &node_data
 	      node_data.push_back(tmp_node_data); // push the node information to node data
 	    }
 
+	  if (std::string::npos != line_read.find("**") )
+	    {
+	      set_allnodes=0;
+	    }
+
 	  if (std::string::npos != line_read.find("NSET=ALLNODES")) // look for node data
 	    {
 	      std::cout << line_read << std::endl;
@@ -142,8 +147,30 @@ tet_struct TetLineToTetData(std::string line_read)
 /*
  * function to dump mesh data to vtk 
  */
-void PrintMeshVtk(std::vector<node_struct> &node_data,std::vector<tet_struct> &tet_data)
+void PrintMeshVtk(std::string meshfile, std::vector<node_struct> &node_data,std::vector<tet_struct> &tet_data)
 {
+  int num_node = 0;
+
+  std::string meshname;
+  std::ofstream outputmesh; // Output file pointer     
+  meshname = meshfile.append(".vtk"); // vtk  fill called meshfile.vtk
+
+  outputmesh.open(meshname.c_str(), ios::out | ios::trunc); // open the meshfile
+
+  outputmesh << "# vtk DataFile Version 2.0 " << std::endl;
+  outputmesh << "Meshtally Information" << std::endl;
+  outputmesh << "ASCII" << std::endl;
+  outputmesh << "DATASET UNSTRUCTURED_GRID" << std::endl;
+
+  std::vector<node_struct>::const_iterator node_it;
+  for ( node_it = node_data.begin() ; node_it != node_data.end() ; ++node_it)
+    {
+      num_node++;
+    }
+
+  outputmesh << "POINTS " << num_node << " FLOAT" << std::endl;
   
+  
+
   return;
 }
