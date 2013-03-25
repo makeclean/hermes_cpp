@@ -57,9 +57,27 @@ int LoadMeshFile(std::string meshfile, std::vector<node_struct> &node_data
  */
 node_struct NodeLineToNodeData(std::string line_read)
 {
-  node_struct mesh_node_structure;
+  node_struct mesh_node_structure; // struct of node data
+  std::string tmp_copy;
 
-  std::cout << "ey up" << std::endl;
+  unsigned pos = line_read.find(","); // find comma in the string
+  mesh_node_structure.node_number = atoi(line_read.substr(0,pos).c_str()); //assign node id
+
+  tmp_copy = line_read.substr(pos+1,line_read.length()); // copy from after comma to end of the string
+  line_read = tmp_copy; // copy to original
+
+  pos = line_read.find(",");
+  mesh_node_structure.x_coord = atof(line_read.substr(0,pos).c_str()); //assign x coord
+
+  tmp_copy = line_read.substr(pos+1,line_read.length()); // copy from after comma to end of the string
+  line_read = tmp_copy; // copy to original
+
+  pos = line_read.find(",");
+  mesh_node_structure.y_coord = atof(line_read.substr(0,pos).c_str()); //assign y coord
+		     
+  tmp_copy = line_read.substr(pos+1,line_read.length()); // copy from after comma to end of the string
+  line_read = tmp_copy; // copy to original
+  mesh_node_structure.z_coord = atof(line_read.substr(0,pos).c_str()); //assign y coord
 
   return mesh_node_structure;
 }
