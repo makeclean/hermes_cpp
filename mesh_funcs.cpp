@@ -13,7 +13,7 @@ using namespace std;
  */
 
 int LoadMeshFile(std::string meshfile, std::vector<node_struct> &node_data
-		 ,std::vector<tet_struct> &tet_data)
+		 ,std::vector<tet_struct> &tet_data, int &num_vols)
 {
   std::ifstream mesh_file; // the abaqus mesh
   std::string line_read; // the line being read from file
@@ -27,19 +27,36 @@ int LoadMeshFile(std::string meshfile, std::vector<node_struct> &node_data
   if( mesh_file.is_open() ) // while we can read data
     {
       int set_allnodes = 0 ; // when file is reading the line NSET=ALLNODES
+      int skip_line = 0; // when to skip a line or not
+      int set_tet_data =0 ; // when we have reached tets 
       while( getline(mesh_file,line_read) ) //take the current line and decide what do 
 	{
 	  if ( set_allnodes == 1 )
 	    {
 	      tmp_node_data = NodeLineToNodeData(line_read); // convert the line being read into node struct
+	      node_data.push_back(tmp_node_data); // push the node information to node data
 	    }
 
-	  if (std::string::npos != line_read.find("NSET=ALLNODES"))
+	  if (std::string::npos != line_read.find("NSET=ALLNODES")) // look for node data
 	    {
 	      std::cout << line_read << std::endl;
 	      set_allnodes = 1;
 	    }
 
+	  if (std::string::npos != line_read.find("*ELEMENT, TYPE")) // look for volume entity information
+	    {
+	      num_vols += 1; // increment num_vols by 1
+	      skip_line = 1; // since we have read element,type we now need to skip reading a line
+	      set_tet_data = 1;
+	    }
+
+	  if ( set_tet_data == 1 && skip_line == 0 )
+	    {
+	      tmp_tet_data = TetLinetoTetData(line_read);
+	      std::cout << line_read << std::endl;
+	    }  
+
+	  skip_line = 0;
 	}
     }
   else
@@ -53,7 +70,7 @@ int LoadMeshFile(std::string meshfile, std::vector<node_struct> &node_data
 }
 
 /*
- *
+ *   function to take a string and convert the string to node_structure format
  */
 node_struct NodeLineToNodeData(std::string line_read)
 {
@@ -80,5 +97,12 @@ node_struct NodeLineToNodeData(std::string line_read)
   mesh_node_structure.z_coord = atof(line_read.substr(0,pos).c_str()); //assign y coord
 
   return mesh_node_structure;
+}
+
+tet_struct TetLineToTetData(std::string line_read)
+{
+  
+
+  return mesh_tet_structure;
 }
 
