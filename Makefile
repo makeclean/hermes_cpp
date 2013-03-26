@@ -26,7 +26,8 @@ PROGRAMS = hermes
 all: $(PROGRAMS)
 
 OBJS = 	mesh_funcs.o \
-	preprocessing.o
+	preprocessing.o\
+	cuda_query.o
 
 hermes: main.o ${OBJS}
 	$(CXX) $(LD_FLAGS) -o hermes main.o ${OBJS}  
@@ -39,6 +40,9 @@ preprocessing.o: preprocessing.cpp
 
 mesh_funcs.o: mesh_funcs.cpp
 	$(CXX) $(CXXFLAGS) -c mesh_funcs.cpp $(LD_FLAGS) 
+
+cuda_query.o: cuda_query.cpp
+	$(CXX) $(CXXFLAGS) -c cuda_query.cpp $(LD_FLAGS) 
 
 clean:
 	rm -f ${OBJS} hermes
