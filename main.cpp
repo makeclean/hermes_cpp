@@ -3,6 +3,7 @@
 #include <vector> 
 
 #include "MeshData.hpp"
+#include "PreProcess.hpp"
 
 int main ( int argc, char *argv[] )
 {
@@ -15,21 +16,24 @@ int main ( int argc, char *argv[] )
   // parse the command line arguments
   for ( int argnum = 0 ; argnum <= argc-1 ; argnum++ )
     {
-      std::cout << argv[argnum] << std::endl;
       if ( argv[argnum] == std::string("--mesh") )
 	{
 	  meshfile = std::string(argv[argnum+1]); // convert to std::string
 	  // return refs to node data and tet data
+	  std::cout << "Reading mesh ..." << std::endl;
 	  errorcode = LoadMeshFile(meshfile,node_data,tet_data,num_vols); // load the file pointed to
 	  if ( errorcode != 0 )
 	    {
+	      return 1;
 	      // clean up since we have failed to read the mesh
 	    }
 
-	  std::cout << tet_data.size() << " num vls = " << num_vols << std::endl;
-
+	  PrintMeshVtk(meshfile,node_data,tet_data); // dump the geometry mesh to file
 	}
+
     }
+
+  errorcode = PreProcess(node_data,tet_data); // Pre process the mesh data, renumber etc
 
   return 0;
 }
