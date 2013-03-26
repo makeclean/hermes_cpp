@@ -25,18 +25,21 @@ PROGRAMS = hermes
 # "make" builds all
 all: $(PROGRAMS)
 
-OBJS = 	main.o \
-	mesh_funcs.o
+OBJS = 	mesh_funcs.o \
+	preprocessing.o
 
-hermes: ${OBJS}
-	$(CXX) $(LD_FLAGS) -o hermes ${OBJS}  
+hermes: main.o ${OBJS}
+	$(CXX) $(LD_FLAGS) -o hermes main.o ${OBJS}  
 
 main.o: main.cpp 
-	$(CXX) $(CXXFLAGS) -c main.cpp mesh_funcs.o $(LD_FLAGS) 
+	$(CXX) $(CXXFLAGS) -c main.cpp ${OBJS} $(LD_FLAGS) 
+
+preprocessing.o: preprocessing.cpp 
+	$(CXX) $(CXXFLAGS) -c preprocessing.cpp $(LD_FLAGS) 
 
 mesh_funcs.o: mesh_funcs.cpp
 	$(CXX) $(CXXFLAGS) -c mesh_funcs.cpp $(LD_FLAGS) 
 
 clean:
-	rm -f ${OBJS}
+	rm -f ${OBJS} hermes
 
