@@ -4,14 +4,19 @@
 
 #include "CudaData.hpp"
 
+/*
+ *  Queries and prints list of CUDA capable devices, returns 0 if there were none
+ */
 int CudaQuery()
 {
-  int deviceCount = 0;
-  cudaError_t error_id = cudaGetDeviceCount(&deviceCount);
-  std::cout << "There are " << deviceCount << " devices" << std::endl;
+  int devicecount = 0;
+  cudaError_t error_id = cudaGetDeviceCount(&devicecount);
+  std::cout << "+===============================================================+" << std::endl;
+  std::cout << "There are " << devicecount << " device(s)" << std::endl;
+  std::cout << "+===============================================================+" << std::endl;
 
   int dev, driverVersion = 0, runtimeVersion = 0;
-  for (dev = 0; dev < deviceCount; ++dev)
+  for (dev = 0; dev < devicecount; ++dev)
     {
         cudaSetDevice(dev);
         cudaDeviceProp deviceProp;
@@ -31,7 +36,10 @@ int CudaQuery()
         printf("%s", msg);
 
         printf("  GPU Clock rate:                                %.0f MHz (%0.2f GHz)\n", deviceProp.clockRate * 1e-3f, deviceProp.clockRate * 1e-6f);
+
+  std::cout << "+===============================================================+" << std::endl;
+
     }
 
-  return 0;
+  return devicecount;
 }
