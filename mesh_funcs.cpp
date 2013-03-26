@@ -218,5 +218,7 @@ void PrintMeshVtk(std::string meshfile, std::vector<node_struct> &node_data,std:
       outputmesh << (tet_it->mat) << std::endl;
     }
 
+  outputmesh.close(); // close the file
+
   return;
 }
