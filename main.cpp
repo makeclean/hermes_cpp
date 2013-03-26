@@ -4,6 +4,7 @@
 
 #include "MeshData.hpp"
 #include "PreProcess.hpp"
+#include "CudaData.hpp"
 
 int main ( int argc, char *argv[] )
 {
@@ -32,6 +33,8 @@ int main ( int argc, char *argv[] )
 	}
 
     }
+
+  errorcode = CudaQuery(); // query the cuda devices
 
   errorcode = PreProcess(node_data,tet_data); // Pre process the mesh data, renumber etc
 
