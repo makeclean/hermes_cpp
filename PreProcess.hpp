@@ -6,9 +6,11 @@ int PreProcess(std::vector<node_struct> &node_data, std::vector<tet_struct> &tet
 /*
  *  ReNumberTets
  */ 
-int ReNumberTets(std::vector<tet_struct> &tet_data); 
+int ReNumberTets(std::vector<node_struct> node_data_original, 
+		 std::vector<tet_struct> &tet_data); 
 
 /*
  *  ReNumberNodes
  */ 
-int ReNumberNodes(std::vector<node_struct> &node_data); 
+int ReNumberNodes(std::vector<node_struct> &node_data, 
+		  std::vector<node_struct> &node_data_original); 
