@@ -25,6 +25,8 @@ int PreProcess(std::vector<node_struct> &node_data, std::vector<tet_struct> &tet
   
   std::cout << "Calculating volumes " << std::endl;
   
+  errorcode = CalculateTetVolume(node_data,tet_data); // calculate the tet vols
+  
   return 0;
 }
 
@@ -84,4 +86,15 @@ int ReNumberTets(std::vector<node_struct> node_data, std::vector<tet_struct> &te
        }
      
     return 0;
+}
+
+int CalculateTetVolume(std::vector<node_struct> node_data, std::vector<tet_struct> &tet_data)
+{
+   std::vector<tet_struct>::iterator tet_it; //iterator through tet_data
+   for ( tet_it = tet_data.begin() ; tet_it != tet_data.end() ; ++tet_it )
+      {
+	
+      }
+      
+   return 0;
 }
