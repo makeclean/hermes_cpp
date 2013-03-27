@@ -90,10 +90,18 @@ int ReNumberTets(std::vector<node_struct> node_data, std::vector<tet_struct> &te
 
 int CalculateTetVolume(std::vector<node_struct> node_data, std::vector<tet_struct> &tet_data)
 {
+   int node1,node2,node3,node4; //id numbers of the nodes
    std::vector<tet_struct>::iterator tet_it; //iterator through tet_data
    for ( tet_it = tet_data.begin() ; tet_it != tet_data.end() ; ++tet_it )
       {
-	
+	 node1 = (tet_it->link1);
+	 node2 = (tet_it->link2);
+	 node3 = (tet_it->link3);
+	 node4 = (tet_it->link4);	 
+	 
+	 std::cout << node_data[node1].x_coord << " " 
+		   << node_data[node1].y_coord << " "
+		   << node_data[node1].z_coord << std::endl;
       }
       
    return 0;
