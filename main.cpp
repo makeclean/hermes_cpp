@@ -39,6 +39,7 @@ int main ( int argc, char *argv[] )
     {
       std::cerr << "There were no CUDA capable devices found" << std::endl;
       std::cerr << "Consider running in MPI or OMP mode" << std::endl;
+      return 1;
     }
 
   errorcode = PreProcess(node_data,tet_data); // Pre process the mesh data, renumber etc
