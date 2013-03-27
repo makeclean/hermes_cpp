@@ -14,3 +14,9 @@ int ReNumberTets(std::vector<node_struct> node_data_original,
  */ 
 int ReNumberNodes(std::vector<node_struct> &node_data, 
 		  std::vector<node_struct> &node_data_original); 
+
+/*
+ * Calculate tet volumes on the basis of the tet vertices
+ */
+int CalculateTetVolume(std::vector<node_struct> node_data_original, 
+		 std::vector<tet_struct> &tet_data);
