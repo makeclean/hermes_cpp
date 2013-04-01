@@ -1,9 +1,14 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <math.h>
+
+#include <omp.h>
 
 #include "MeshData.hpp"
 #include "PreProcess.hpp"
+
+int WrapCalculateTetVolume(std::vector<node_struct> node_data, std::vector<tet_struct> tet_data);
 
 /*
  * 	Function to preprocess the mesh to reorder the element from 1 to N, 
@@ -22,6 +27,8 @@ int PreProcess(std::vector<node_struct> &node_data, std::vector<tet_struct> &tet
   errorcode = ReNumberNodes(node_data, copy_original_node); // renumber the nodes from 1 to N
   
   errorcode = ReNumberTets(copy_original_node,tet_data); // renumber the nodes from 1 to M
+  
+  errorcode = WrapCalculateTetVolume(node_data,tet_data); // call gpu wrapper
   
   std::cout << "Calculating volumes " << std::endl;
   
@@ -82,7 +89,6 @@ int ReNumberTets(std::vector<node_struct> node_data, std::vector<tet_struct> &te
        {
 	     tet_it->tet_num = tet_num;
 	     tet_num++;
-	 
        }
      
     return 0;
@@ -91,18 +97,58 @@ int ReNumberTets(std::vector<node_struct> node_data, std::vector<tet_struct> &te
 int CalculateTetVolume(std::vector<node_struct> node_data, std::vector<tet_struct> &tet_data)
 {
    int node1,node2,node3,node4; //id numbers of the nodes
-   std::vector<tet_struct>::iterator tet_it; //iterator through tet_data
-   for ( tet_it = tet_data.begin() ; tet_it != tet_data.end() ; ++tet_it )
+   int tet_it;
+   vector a,b,c,d;
+   
+   double total = 0.0;
+  
+   #pragma omp parallel for
+   for ( tet_it = 0 ; tet_it <= tet_data.capacity()-1 ; tet_it++ )
       {
-	 node1 = (tet_it->link1);
-	 node2 = (tet_it->link2);
-	 node3 = (tet_it->link3);
-	 node4 = (tet_it->link4);	 
+	#pragma omp critical
+	{
+	  int th_id = omp_get_thread_num();  
+	  std::cout << th_id << std::endl;
+	} 
+
+       
+	/*
+	#pragma omp master
+	{
+	  int nthreads = omp_get_num_threads();
+	  std::cout << "There are " << nthreads << " threads" << '\n';
+	}
+
+	*/
+	
+	 node1 = tet_data[tet_it].link1;
+	 node2 = tet_data[tet_it].link2;
+	 node3 = tet_data[tet_it].link3;
+	 node4 = tet_data[tet_it].link4;
+	
 	 
-	 std::cout << node_data[node1].x_coord << " " 
-		   << node_data[node1].y_coord << " "
-		   << node_data[node1].z_coord << std::endl;
-      }
+	 a.i = node_data[node1].x_coord-node_data[node4].x_coord;
+	 a.j = node_data[node1].y_coord-node_data[node4].y_coord;
+	 a.k = node_data[node1].z_coord-node_data[node4].z_coord;
+
+	 b.i = node_data[node2].x_coord-node_data[node4].x_coord;
+	 b.j = node_data[node2].y_coord-node_data[node4].y_coord;
+	 b.k = node_data[node2].z_coord-node_data[node4].z_coord;
+	 
+	 c.i = node_data[node3].x_coord-node_data[node4].x_coord;
+	 c.j = node_data[node3].y_coord-node_data[node4].y_coord;
+	 c.k = node_data[node3].z_coord-node_data[node4].z_coord;
+	 
+	 d.i = (a.j*b.k) - (a.k*b.j); //cross product
+	 d.j = (a.k*b.i) - (a.i*b.k); //cross product
+	 d.k = (a.i*b.j) - (a.j*b.i); //cross product
+	 
+	 tet_data[tet_it].volume = fabs((c.i*d.i)+(c.j*d.j)+(c.k*d.k))/6.0; //dot product
+	 total += tet_data[tet_it].volume;
+	 //std::cout << (tet_it->volume) << std::endl;
+	}
       
+      std::cout << total << std::endl;
    return 0;
 }
+
