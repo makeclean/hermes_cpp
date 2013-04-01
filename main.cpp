@@ -33,7 +33,7 @@ int main ( int argc, char *argv[] )
 	}
 
     }
-
+    
   errorcode = CudaQuery(); // query the cuda devices
   if ( errorcode == 0 )
     {
@@ -44,6 +44,8 @@ int main ( int argc, char *argv[] )
 
   errorcode = PreProcess(node_data,tet_data); // Pre process the mesh data, renumber etc
 
+  
+  
   return 0;
 }
 
