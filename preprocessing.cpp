@@ -59,18 +59,10 @@ int PreProcess(std::vector<node_struct> &node_data, std::vector<tet_struct> &tet
     }
 
   // now have re-ordered list
-  
-  /*
-  std::vector<tet_struct>::iterator tet_it;
-  // replace the list from M to L from 1 to L-M, 
-  for ( tet_it = tet_data.begin() ; tet_it != tet_data.end() ; ++tet_it )
-    {
-      std::cout << (*tet_it).link1 << " " << (*tet_it).link2 << " "
-		<< (*tet_it).link3 << " " << (*tet_it).link4 << std::endl;
-    }
-  */
 
   int i = CalculateVolume(node_data, tet_data);
+
+  i = DetermineAdjacancy(node_data,tet_data);
 
   return 0;
 }
@@ -140,4 +132,85 @@ int CalculateVolume(std::vector<node_struct> &node_data, std::vector<tet_struct>
   std::cout << "total volume = " << total_volume << std::endl;
 
   return 1;
+}
+
+int DetermineAdjacancy(std::vector<node_struct> node_data,std::vector<tet_struct>tet_data)
+{
+  int tet_it;
+  int nodes[4];
+  int l1,l2,l3,l4;
+  int matches;
+
+  // loop over the tet data
+  for ( tet_it = 0 ; tet_it <= tet_data.size() ; ++tet_it )
+    {
+      std::cout << tet_it << std::endl;
+      matches = 0 ;
+
+      nodes[0]=tet_data[tet_it].link1;
+      nodes[1]=tet_data[tet_it].link2;
+      nodes[2]=tet_data[tet_it].link3; 
+      nodes[3]=tet_data[tet_it].link4;
+
+      for ( int i = 0 ; i <= tet_data.size() ; i++ )
+	{
+	  if (tet_it == i )
+	    {
+	      break;     
+	    }
+	  else
+	    {
+	      l1=shared(nodes[0],i,tet_data);
+	      l2=shared(nodes[1],i,tet_data);
+	      l3=shared(nodes[2],i,tet_data);
+	      l4=shared(nodes[3],i,tet_data);
+
+	      if((l1==1) && (l2==1) && (l3==1) && (l4==0))
+		{
+		  matches++;
+		  tet_data[tet_it].adj[0]=matches;
+		  tet_data[tet_it].adj[matches+1]=i;
+		}
+	      else if((l1==1) && (l2==1) && (l3==0) && (l4==1))
+		{
+		  matches++;
+		  tet_data[tet_it].adj[0]=matches;
+		  tet_data[tet_it].adj[matches+1]=i;
+		}
+	      else if((l1==1) && (l2==0) && (l3==1) && (l4==1))
+		{
+		  matches++;
+		  tet_data[tet_it].adj[0]=matches;
+		  tet_data[tet_it].adj[matches+1]=i;
+		}
+	      else if((l1==0) && (l2==1) && (l3==1) && (l4==1))
+		{
+		  matches++;
+		  tet_data[tet_it].adj[0]=matches;
+		  tet_data[tet_it].adj[matches+1]=i;
+		}
+	    }
+	}   
+    }
+
+  return 1;
+}
+
+// function to determine if node, node_test is shared with nodes in 
+// tet num index tet[index]
+int shared(int node_test, int index, std::vector<tet_struct> tet_data)
+{
+  int nodes[4];
+
+  nodes[0]=tet_data[index].link1;
+  nodes[1]=tet_data[index].link2;
+  nodes[2]=tet_data[index].link3; 
+  nodes[3]=tet_data[index].link4;
+
+  for ( int k = 0 ; k = 3 ; k++ )
+    {
+      if ( node_test == nodes[k])
+	return 1;     
+    }
+  return 0;
 }
