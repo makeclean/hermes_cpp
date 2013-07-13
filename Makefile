@@ -18,7 +18,7 @@ CXX = nvcc
 
 # flags for debugging or for maximum performance, comment as necessary
 #Gfortran compile flags
-CXXFLAGS = -g -pg
+CXXFLAGS = -g -pg --compiler-bindir=/opt/gcc-4.6.3/bin
 LD_FLAGS = -lcurand -lcudart
 PROGRAMS = hermes
 
@@ -26,8 +26,10 @@ PROGRAMS = hermes
 all: $(PROGRAMS)
 
 OBJS = 	mesh_funcs.o \
-	preprocessing.o\
-	cuda_query.o
+	preprocessing.o \
+	cuda_query.o \
+	cuda_preprocess.o 
+
 
 hermes: main.o ${OBJS}
 	$(CXX) $(LD_FLAGS) -o hermes main.o ${OBJS}  
@@ -41,8 +43,11 @@ preprocessing.o: preprocessing.cpp
 mesh_funcs.o: mesh_funcs.cpp
 	$(CXX) $(CXXFLAGS) -c mesh_funcs.cpp $(LD_FLAGS) 
 
-cuda_query.o: cuda_query.cpp
-	$(CXX) $(CXXFLAGS) -c cuda_query.cpp $(LD_FLAGS) 
+cuda_query.o: cuda_query.cu
+	$(CXX) $(CXXFLAGS) -c cuda_query.cu $(LD_FLAGS) 
+
+cuda_preprocess.o: cuda_preprocess.cu
+	$(CXX) $(CXXFLAGS) -c cuda_preprocess.cu $(LD_FLAGS) 
 
 clean:
 	rm -f ${OBJS} hermes
