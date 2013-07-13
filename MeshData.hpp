@@ -11,13 +11,14 @@ struct node_struct
 
 struct tet_struct
 {
-  int tet_num;
-  int link1;
-  int link2;
-  int link3;
-  int link4;
-  int mat;
-  double volume;
+  int tet_num;   // the tet id
+  int link1;     // node1
+  int link2;     // node2
+  int link3;     // node3
+  int link4;     // node4
+  int mat;       // the material number
+  int adj[5];    // the adjacancy data
+  double volume; // the volume
 };
 
 
